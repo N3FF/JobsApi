@@ -70,7 +70,7 @@ namespace JobsApi.Controllers
 
             if (count > PAGE_SIZE * index)
             {
-                return Ok(await _db.JobListings.Where(j => j.Categories == category).Skip(index * PAGE_SIZE).Take(PAGE_SIZE).ToListAsync();
+                return Ok(await _db.JobListings.Where(j => j.Categories == category).Skip(index * PAGE_SIZE).Take(PAGE_SIZE).ToListAsync());
             }
 
             return Ok(new List<JobListing>());
