@@ -1,4 +1,5 @@
 ﻿using JobsApi.Data.Enums;
+using JobsApi.Data.Extensions;
 using JobsApi.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +12,11 @@ namespace JobsApi.Controllers
     {
         public JobsContext _db { get; }
 
+        private const int FIRST_PAGE = 1;
+        private const int DEFAULT_PAGE_SIZE = 10;
+        private const int MIN_PAGE_SIZE = 1;
+        private const int MAX_PAGE_SIZE = 50;
+
         public ListingController(JobsContext db)
         {
             _db = db;
@@ -21,75 +27,53 @@ namespace JobsApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<JobListing>> View(int id)
         {
-            var listing = await _db.JobListings
-                                .Include(j => j.ImageUris)
-                                .FirstOrDefaultAsync(j => j.Id == id);
+            var listing = await _db.JobListings.FindJobAsync(id);
 
-            if(listing == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(listing);
+            return listing == null ? NotFound() : Ok(listing);
         }
 
 
         // GET api/<ValuesController>/Page/5
-        [HttpGet("Page/{index}")]
-        public async Task<ActionResult<List<JobListing>>> Browse(int index = 1)
+        [HttpGet("Page/{page}")]
+        public async Task<ActionResult<List<JobListing>>> Browse(int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
         {
-            if (index < 1)
+            if (page < FIRST_PAGE)
             {
                 return NotFound();
             }
-
-            index = index - 1;
-            const int PAGE_SIZE = 2;
-            int count = await _db.JobListings.CountAsync();
-
-            if (count > PAGE_SIZE * index)
+            else if (size < MIN_PAGE_SIZE || size > MAX_PAGE_SIZE)
             {
-                var listings = await _db.JobListings
-                                .Skip(index * PAGE_SIZE)
-                                .Take(PAGE_SIZE)
-                                .Include(j => j.ImageUris)
-                                .ToListAsync();
-
-                return Ok(listings);
+                size = DEFAULT_PAGE_SIZE;
             }
 
-            return Ok(new List<JobListing>());
+            var results = await _db.JobListings
+                            .GetPage(page, size)
+                            .ToListAsync();
+
+            return results.Count == 0 ? NotFound() : Ok(results);
         }
 
 
-        // GET api/<ValuesController>?category=0&index=1
+        // GET api/<ValuesController>?category=0&page=1&size=10
         [HttpGet]
-        public async Task<ActionResult<List<JobListing>>> Search(PostCategories category, int index = 1)
+        public async Task<ActionResult<List<JobListing>>> Search(PostCategories category, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
         {
-            if (index < 1)
+            if (page < FIRST_PAGE) 
+            { 
+                return NotFound(); 
+            } 
+            else if (size < MIN_PAGE_SIZE || size > MAX_PAGE_SIZE)
             {
-                return NotFound();
+                size = DEFAULT_PAGE_SIZE;
             }
 
-            index = index - 1;
-            const int PAGE_SIZE = 2;
-            int count = await _db.JobListings.CountAsync();
+            var results = await _db.JobListings
+                            .Where(j => j.Categories == category)
+                            .GetPage(page, size)
+                            .ToListAsync();
 
-            if (count > PAGE_SIZE * index)
-            {
-                var results = await _db.JobListings
-                                .Where(j => j.Categories == category)
-                                .Skip(index * PAGE_SIZE)
-                                .Take(PAGE_SIZE)
-                                .Include(j => j.ImageUris)
-                                .ToListAsync();
-
-                return Ok(results);
-            }
-
-            return Ok(new List<JobListing>());
+            return results.Count == 0 ? NotFound() : Ok(results);
         }
-
 
         // POST api/<ValuesController>
         [HttpPost]
@@ -107,20 +91,13 @@ namespace JobsApi.Controllers
 
         // PUT api/<ValuesController>/Update/5
         [HttpPut("Update/{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] JobListing update)
+        public async Task<ActionResult> Put(int id, [FromBody] JobListing updated)
         {
             var listing = await _db.JobListings.FindAsync(id);
 
             if (ModelState.IsValid && listing != null)
             {
-                listing.Title = update.Title;
-                listing.Description = update.Description;
-                listing.Categories = update.Categories;
-                listing.Location = update.Location;
-                listing.ContactInfo = update.ContactInfo;
-                listing.ImageUris = update.ImageUris;
-
-                _db.JobListings.Update(listing);
+                _db.JobListings.Update(listing, updated);
                 await _db.SaveChangesAsync();
 
                 return Ok(listing);
