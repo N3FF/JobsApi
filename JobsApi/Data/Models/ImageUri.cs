@@ -6,6 +6,6 @@ namespace JobsApi.Data.Models
     {
         [Key]
         public int Id { get; set; }
-        public string Uri { get; set; }
+        public string Uri { get; set; } = null!;
     }
 }

@@ -21,7 +21,9 @@ namespace JobsApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<JobListing>> View(int id)
         {
-            var listing = await _db.JobListings.FindAsync(id);
+            var listing = await _db.JobListings
+                                .Include(j => j.ImageUris)
+                                .FirstOrDefaultAsync(j => j.Id == id);
 
             if(listing == null)
             {
@@ -47,7 +49,12 @@ namespace JobsApi.Controllers
 
             if (count > PAGE_SIZE * index)
             {
-                var listings = await _db.JobListings.Skip(index * PAGE_SIZE).Take(PAGE_SIZE).ToListAsync();
+                var listings = await _db.JobListings
+                                .Skip(index * PAGE_SIZE)
+                                .Take(PAGE_SIZE)
+                                .Include(j => j.ImageUris)
+                                .ToListAsync();
+
                 return Ok(listings);
             }
 
@@ -70,7 +77,14 @@ namespace JobsApi.Controllers
 
             if (count > PAGE_SIZE * index)
             {
-                return Ok(await _db.JobListings.Where(j => j.Categories == category).Skip(index * PAGE_SIZE).Take(PAGE_SIZE).ToListAsync());
+                var results = await _db.JobListings
+                                .Where(j => j.Categories == category)
+                                .Skip(index * PAGE_SIZE)
+                                .Take(PAGE_SIZE)
+                                .Include(j => j.ImageUris)
+                                .ToListAsync();
+
+                return Ok(results);
             }
 
             return Ok(new List<JobListing>());
@@ -96,6 +110,7 @@ namespace JobsApi.Controllers
         public async Task<ActionResult> Put(int id, [FromBody] JobListing update)
         {
             var listing = await _db.JobListings.FindAsync(id);
+
             if (ModelState.IsValid && listing != null)
             {
                 listing.Title = update.Title;
@@ -104,8 +119,10 @@ namespace JobsApi.Controllers
                 listing.Location = update.Location;
                 listing.ContactInfo = update.ContactInfo;
                 listing.ImageUris = update.ImageUris;
+
                 _db.JobListings.Update(listing);
                 await _db.SaveChangesAsync();
+
                 return Ok(listing);
             }
             return NotFound();

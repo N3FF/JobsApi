@@ -21,9 +21,9 @@ namespace JobsApi.Data.Models
 
         [Required]
         [MinLength(5)]
-        public string Description { get; set; }
+        public string Description { get; set; } = null!;
 
-        public ICollection<ImageUri> ImageUris { get; set; }
+        public ICollection<ImageUri> ImageUris { get; set; } = new List<ImageUri>();
 
         [Required]
         public DateTime ListingTime { get; set; }

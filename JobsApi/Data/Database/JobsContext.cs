@@ -7,8 +7,8 @@ namespace JobsApi.Data.Database
     {
         public JobsContext(DbContextOptions<JobsContext> options) : base(options) { }
 
-        public DbSet<JobListing> JobListings { get; set; }
-        public DbSet<ImageUri> ImageUris { get; set; }
+        public DbSet<JobListing> JobListings { get; set; } = null!;
+        public DbSet<ImageUri> ImageUris { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
