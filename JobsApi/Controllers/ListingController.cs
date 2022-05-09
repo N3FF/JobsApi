@@ -41,10 +41,8 @@ namespace JobsApi.Controllers
             {
                 return NotFound();
             }
-            else if (size < MIN_PAGE_SIZE || size > MAX_PAGE_SIZE)
-            {
-                size = DEFAULT_PAGE_SIZE;
-            }
+
+            size = ValidatePageSize(size);
 
             var results = await _db.JobListings
                             .GetPage(page, size)
@@ -62,10 +60,8 @@ namespace JobsApi.Controllers
             { 
                 return NotFound(); 
             } 
-            else if (size < MIN_PAGE_SIZE || size > MAX_PAGE_SIZE)
-            {
-                size = DEFAULT_PAGE_SIZE;
-            }
+            
+            size = ValidatePageSize(size);
 
             var results = await _db.JobListings
                             .Where(j => j.Categories == category)
@@ -119,6 +115,14 @@ namespace JobsApi.Controllers
                 return Ok();
             }
             return NotFound();
+        }
+
+
+        /* -- Helper Functions -- */
+
+        private int ValidatePageSize(int size)
+        {
+            return (size < MIN_PAGE_SIZE || size > MAX_PAGE_SIZE) ? DEFAULT_PAGE_SIZE : size;
         }
     }
 }
