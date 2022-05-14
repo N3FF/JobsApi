@@ -25,7 +25,7 @@ namespace JobsApi.Controllers
 
         // GET api/<ValuesController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<JobListing>> View(int id)
+        public async Task<ActionResult<IJobListing>> View(int id)
         {
             var listing = await _db.JobListings.FindJobAsync(id);
 
@@ -35,7 +35,7 @@ namespace JobsApi.Controllers
 
         // GET api/<ValuesController>/Page/5
         [HttpGet("Page/{page}")]
-        public async Task<ActionResult<List<JobListing>>> Browse(int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
+        public async Task<ActionResult<List<IJobListing>>> Browse(int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
         {
             if (page < FIRST_PAGE)
             {
@@ -54,7 +54,7 @@ namespace JobsApi.Controllers
 
         // GET api/<ValuesController>?category=0&page=1&size=10
         [HttpGet]
-        public async Task<ActionResult<List<JobListing>>> Search(PostCategories category, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
+        public async Task<ActionResult<List<IJobListing>>> Search(PostCategories category, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
         {
             if (page < FIRST_PAGE) 
             { 
@@ -73,7 +73,7 @@ namespace JobsApi.Controllers
 
         // POST api/<ValuesController>
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] JobListing listing)
+        public async Task<ActionResult> Post([FromBody] IJobListing listing)
         {
             if (ModelState.IsValid)
             {
@@ -87,7 +87,7 @@ namespace JobsApi.Controllers
 
         // PUT api/<ValuesController>/Update/5
         [HttpPut("Update/{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] JobListing updated)
+        public async Task<ActionResult> Put(int id, [FromBody] IJobListing updated)
         {
             var listing = await _db.JobListings.FindAsync(id);
 

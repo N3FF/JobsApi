@@ -4,7 +4,7 @@ namespace JobsApi.Data.Extensions
 {
     public static class ListingExtensions
     {
-        public static void Update(this JobListing listing, JobListing update)
+        public static void Update(this IJobListing listing, IJobListing update)
         {
             listing.Title = update.Title;
             listing.Description = update.Description;

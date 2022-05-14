@@ -3,6 +3,7 @@
     [Flags]
     public enum PostCategories
     {
+        None,
         Gig,
         Internship,
         PartTime,

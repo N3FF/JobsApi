@@ -4,7 +4,7 @@ namespace JobsApi.Data.Extensions
 {
     public static class JobDbExtensions
     {
-        public static IQueryable<JobListing> GetPage(this IQueryable<JobListing> listings, int page, int size)
+        public static IQueryable<IJobListing> GetPage(this IQueryable<IJobListing> listings, int page, int size)
         {
             page--;
             return listings
@@ -13,13 +13,13 @@ namespace JobsApi.Data.Extensions
                 .Include(j => j.ImageUris);
         }
 
-        public static void Update(this DbSet<JobListing> jobListings, JobListing current, JobListing updated)
+        public static void Update(this DbSet<IJobListing> jobListings, IJobListing current, IJobListing updated)
         {
             current.Update(updated);
             jobListings.Update(current);
         }
 
-        public async static Task<JobListing?> FindJobAsync(this DbSet<JobListing> jobListings, int id)
+        public async static Task<IJobListing?> FindJobAsync(this DbSet<IJobListing> jobListings, int id)
         {
             return await jobListings
                                 .Include(j => j.ImageUris)

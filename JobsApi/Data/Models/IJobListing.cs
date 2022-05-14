@@ -4,8 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JobsApi.Data.Models
 {
-    [Serializable]
-    public class JobListing
+    public interface IJobListing
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -17,13 +16,13 @@ namespace JobsApi.Data.Models
         [Required]
         [MinLength(5)]
         [MaxLength(75)]
-        public string Title { get; set; } = string.Empty;
+        public string Title { get; set; }
 
         [Required]
         [MinLength(5)]
-        public string Description { get; set; } = null!;
+        public string Description { get; set; }
 
-        public ICollection<ImageUri> ImageUris { get; set; } = new List<ImageUri>();
+        public ICollection<ImageUri> ImageUris { get; set; }
 
         [Required]
         public DateTime ListingTime { get; set; }
