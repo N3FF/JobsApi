@@ -48,13 +48,13 @@ namespace JobsApi.Controllers
                             .GetPage(page, size)
                             .ToListAsync();
 
-            return results.Count == 0 ? NotFound() : Ok(results);
+            return Ok(results);
         }
 
 
         // GET api/<ValuesController>?category=0&page=1&size=10
         [HttpGet]
-        public async Task<ActionResult<List<IJobListing>>> Search(PostCategories category, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
+        public async Task<ActionResult<List<IJobListing>>> CategorySearch(PostCategories category, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
         {
             if (page < FIRST_PAGE) 
             { 
@@ -68,8 +68,28 @@ namespace JobsApi.Controllers
                             .GetPage(page, size)
                             .ToListAsync();
 
-            return results.Count == 0 ? NotFound() : Ok(results);
+            return Ok(results);
         }
+
+
+        // GET api/<ValuesController>?search=words&page=1&size=10
+        [HttpGet]
+        public async Task<ActionResult<List<IJobListing>>> TitleSearch(string search, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
+        {
+            if (page < FIRST_PAGE)
+            {
+                return NotFound();
+            }
+
+            size = ValidatePageSize(size);
+
+            var results = await _db.JobListings
+                            .GetPage(page, size)
+                            .ToListAsync();
+
+            return Ok(results);
+        }
+
 
         // POST api/<ValuesController>
         [HttpPost]

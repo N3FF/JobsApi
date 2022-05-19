@@ -25,5 +25,10 @@ namespace JobsApi.Data.Extensions
                                 .Include(j => j.ImageUris)
                                 .FirstOrDefaultAsync(j => j.Id == id);
         }
+
+        public async static Task<IQueryable<IJobListing>> SearchTitleAsync(this DbSet<IJobListing> jobListings, string search)
+        {
+            return await Task.Run(()=> jobListings); //Find way to search titles
+        }
     }
 }
