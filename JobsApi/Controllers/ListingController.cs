@@ -1,6 +1,5 @@
-﻿using JobsApi.Data.Enums;
+﻿using ApiLibrary;
 using JobsApi.Data.Extensions;
-using JobsApi.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobsApi.Controllers
@@ -10,7 +9,7 @@ namespace JobsApi.Controllers
     [ApiController]
     public class ListingController : ControllerBase
     {
-        public JobsContext _db { get; }
+        private readonly JobsContext _db;
 
         private const int FIRST_PAGE = 1;
         private const int DEFAULT_PAGE_SIZE = 10;
@@ -25,9 +24,9 @@ namespace JobsApi.Controllers
 
         // GET api/<ValuesController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<IJobListing>> View(int id)
+        public async Task<ActionResult<JobListingDTO>> View(int id)
         {
-            var listing = await _db.JobListings.FindJobAsync(id);
+            var listing = await _db.JobListings.FindListingAsync(id);
 
             return listing == null ? NotFound() : Ok(listing);
         }
@@ -35,7 +34,7 @@ namespace JobsApi.Controllers
 
         // GET api/<ValuesController>/Page/5
         [HttpGet("Page/{page}")]
-        public async Task<ActionResult<List<IJobListing>>> Browse(int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
+        public async Task<ActionResult<List<JobListingDTO>>> Browse(int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
         {
             if (page < FIRST_PAGE)
             {
@@ -54,7 +53,7 @@ namespace JobsApi.Controllers
 
         // GET api/<ValuesController>?category=0&page=1&size=10
         [HttpGet]
-        public async Task<ActionResult<List<IJobListing>>> CategorySearch(PostCategories category, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
+        public async Task<ActionResult<List<JobListingDTO>>> CategorySearch(JobCategories category, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
         {
             if (page < FIRST_PAGE) 
             { 
@@ -74,7 +73,7 @@ namespace JobsApi.Controllers
 
         // GET api/<ValuesController>?search=words&page=1&size=10
         [HttpGet]
-        public async Task<ActionResult<List<IJobListing>>> TitleSearch(string search, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
+        public async Task<ActionResult<List<JobListingDTO>>> TitleSearch(string search, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
         {
             if (page < FIRST_PAGE)
             {
@@ -93,7 +92,7 @@ namespace JobsApi.Controllers
 
         // POST api/<ValuesController>
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] IJobListing listing)
+        public async Task<ActionResult> Post([FromBody] JobListingDTO listing)
         {
             if (ModelState.IsValid)
             {
@@ -107,7 +106,7 @@ namespace JobsApi.Controllers
 
         // PUT api/<ValuesController>/Update/5
         [HttpPut("Update/{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] IJobListing updated)
+        public async Task<ActionResult> Put(int id, [FromBody] JobListingDTO updated)
         {
             var listing = await _db.JobListings.FindAsync(id);
 

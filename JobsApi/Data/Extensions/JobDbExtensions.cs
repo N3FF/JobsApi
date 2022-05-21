@@ -1,34 +1,41 @@
-﻿using JobsApi.Data.Models;
+﻿using ApiLibrary;
 
 namespace JobsApi.Data.Extensions
 {
     public static class JobDbExtensions
     {
-        public static IQueryable<IJobListing> GetPage(this IQueryable<IJobListing> listings, int page, int size)
+        public static IQueryable<JobListingDTO> GetPage(this IQueryable<JobListingDTO> listings, int page, int size)
         {
             page--;
             return listings
                 .Skip(page * size)
                 .Take(size)
-                .Include(j => j.ImageUris);
+                .Include(l => l.ImageUris);
         }
 
-        public static void Update(this DbSet<IJobListing> jobListings, IJobListing current, IJobListing updated)
+        public static void Update(this DbSet<JobListingDTO> listings, JobListingDTO current, JobListingDTO updated)
         {
             current.Update(updated);
-            jobListings.Update(current);
+            listings.Update(current);
         }
 
-        public async static Task<IJobListing?> FindJobAsync(this DbSet<IJobListing> jobListings, int id)
+        public async static Task<JobListingDTO?> FindListingAsync(this DbSet<JobListingDTO> listings, int id)
         {
-            return await jobListings
-                                .Include(j => j.ImageUris)
-                                .FirstOrDefaultAsync(j => j.Id == id);
+            return await listings
+                                .Include(l => l.ImageUris)
+                                .FirstOrDefaultAsync(l => l.Id == id);
         }
 
-        public async static Task<IQueryable<IJobListing>> SearchTitleAsync(this DbSet<IJobListing> jobListings, string search)
+        public async static Task<IQueryable<JobListingDTO>> SearchTitleAsync(this DbSet<JobListingDTO> listings, string search)
         {
-            return await Task.Run(()=> jobListings); //Find way to search titles
+            StringSplitOptions options = StringSplitOptions.None;
+
+            options |= StringSplitOptions.RemoveEmptyEntries;
+            options |= StringSplitOptions.TrimEntries;
+
+            IEnumerable<string> words = search.Split(' ', options);
+
+            return await Task.Run(() => listings.Where(l => l.Title.Split(' ', options).Intersect(words).Any()));
         }
     }
 }

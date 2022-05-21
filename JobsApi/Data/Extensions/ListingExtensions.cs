@@ -1,10 +1,10 @@
-﻿using JobsApi.Data.Models;
+﻿using ApiLibrary;
 
 namespace JobsApi.Data.Extensions
 {
     public static class ListingExtensions
     {
-        public static void Update(this IJobListing listing, IJobListing update)
+        public static void Update(this JobListingDTO listing, JobListingDTO update)
         {
             listing.Title = update.Title;
             listing.Description = update.Description;
