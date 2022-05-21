@@ -26,16 +26,19 @@ namespace JobsApi.Data.Extensions
                                 .FirstOrDefaultAsync(l => l.Id == id);
         }
 
-        public async static Task<IQueryable<JobListingDTO>> SearchTitleAsync(this DbSet<JobListingDTO> listings, string search)
+        public static IQueryable<JobListingDTO> SearchTitle(this DbSet<JobListingDTO> listings, string search)
         {
             StringSplitOptions options = StringSplitOptions.None;
 
             options |= StringSplitOptions.RemoveEmptyEntries;
             options |= StringSplitOptions.TrimEntries;
 
-            IEnumerable<string> words = search.Split(' ', options);
+            string[] words = search.Split(' ', options);
 
-            return await Task.Run(() => listings.Where(l => l.Title.Split(' ', options).Intersect(words).Any()));
+            // For now it's just searching for the first word
+
+            return listings.Where(l => EF.Functions.Like(l.Title, "%" + words[0] + "%"));
+
         }
     }
 }

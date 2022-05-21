@@ -36,23 +36,23 @@ namespace JobsApi.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Uri = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    JobListingId = table.Column<int>(type: "int", nullable: true)
+                    JobListingDTOId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ImageUris", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ImageUris_JobListings_JobListingId",
-                        column: x => x.JobListingId,
+                        name: "FK_ImageUris_JobListings_JobListingDTOId",
+                        column: x => x.JobListingDTOId,
                         principalTable: "JobListings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ImageUris_JobListingId",
+                name: "IX_ImageUris_JobListingDTOId",
                 table: "ImageUris",
-                column: "JobListingId");
+                column: "JobListingDTOId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

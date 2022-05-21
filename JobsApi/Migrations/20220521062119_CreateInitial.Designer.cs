@@ -12,19 +12,19 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JobsApi.Migrations
 {
     [DbContext(typeof(JobsContext))]
-    [Migration("20220509030333_CreateInitial")]
+    [Migration("20220521062119_CreateInitial")]
     partial class CreateInitial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("ProductVersion", "6.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("JobsApi.Data.Models.ImageUri", b =>
+            modelBuilder.Entity("ApiLibrary.ImageUriDTO", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,7 +32,7 @@ namespace JobsApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("JobListingId")
+                    b.Property<int?>("JobListingDTOId")
                         .HasColumnType("int");
 
                     b.Property<string>("Uri")
@@ -41,12 +41,12 @@ namespace JobsApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("JobListingId");
+                    b.HasIndex("JobListingDTOId");
 
                     b.ToTable("ImageUris");
                 });
 
-            modelBuilder.Entity("JobsApi.Data.Models.JobListing", b =>
+            modelBuilder.Entity("ApiLibrary.JobListingDTO", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -86,15 +86,15 @@ namespace JobsApi.Migrations
                     b.ToTable("JobListings");
                 });
 
-            modelBuilder.Entity("JobsApi.Data.Models.ImageUri", b =>
+            modelBuilder.Entity("ApiLibrary.ImageUriDTO", b =>
                 {
-                    b.HasOne("JobsApi.Data.Models.JobListing", null)
+                    b.HasOne("ApiLibrary.JobListingDTO", null)
                         .WithMany("ImageUris")
-                        .HasForeignKey("JobListingId")
+                        .HasForeignKey("JobListingDTOId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("JobsApi.Data.Models.JobListing", b =>
+            modelBuilder.Entity("ApiLibrary.JobListingDTO", b =>
                 {
                     b.Navigation("ImageUris");
                 });

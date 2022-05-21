@@ -33,10 +33,10 @@ namespace JobsApi.Controllers
 
 
         // GET api/<ValuesController>/Page/5
-        [HttpGet("Page/{page}")]
-        public async Task<ActionResult<List<JobListingDTO>>> Browse(int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
+        [HttpGet("Page")]
+        public async Task<ActionResult<List<JobListingDTO>>> Browse(int current = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
         {
-            if (page < FIRST_PAGE)
+            if (current < FIRST_PAGE)
             {
                 return NotFound();
             }
@@ -44,7 +44,7 @@ namespace JobsApi.Controllers
             size = ValidatePageSize(size);
 
             var results = await _db.JobListings
-                            .GetPage(page, size)
+                            .GetPage(current, size)
                             .ToListAsync();
 
             return Ok(results);
@@ -52,7 +52,7 @@ namespace JobsApi.Controllers
 
 
         // GET api/<ValuesController>?category=0&page=1&size=10
-        [HttpGet]
+        [HttpGet("Search/Category/{category}")]
         public async Task<ActionResult<List<JobListingDTO>>> CategorySearch(JobCategories category, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
         {
             if (page < FIRST_PAGE) 
@@ -72,8 +72,8 @@ namespace JobsApi.Controllers
 
 
         // GET api/<ValuesController>?search=words&page=1&size=10
-        [HttpGet]
-        public async Task<ActionResult<List<JobListingDTO>>> TitleSearch(string search, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
+        [HttpGet("Search/Title")]
+        public async Task<ActionResult<List<JobListingDTO>>> TitleSearch(string title, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
         {
             if (page < FIRST_PAGE)
             {
@@ -83,6 +83,7 @@ namespace JobsApi.Controllers
             size = ValidatePageSize(size);
 
             var results = await _db.JobListings
+                            .SearchTitle(title)
                             .GetPage(page, size)
                             .ToListAsync();
 
