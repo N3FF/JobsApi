@@ -32,7 +32,7 @@ namespace JobsApi.Controllers
         }
 
 
-        // GET api/<ValuesController>/Page/5
+        // GET api/<ValuesController>/Page?current=1&size=10
         [HttpGet("Page")]
         public async Task<ActionResult<List<JobListingDTO>>> Browse(int current = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
         {
@@ -64,26 +64,6 @@ namespace JobsApi.Controllers
 
             var results = await _db.JobListings
                             .Where(j => j.Categories == category)
-                            .GetPage(page, size)
-                            .ToListAsync();
-
-            return Ok(results);
-        }
-
-
-        // GET api/<ValuesController>?search=words&page=1&size=10
-        [HttpGet("Search/Title")]
-        public async Task<ActionResult<List<JobListingDTO>>> TitleSearch(string title, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
-        {
-            if (page < FIRST_PAGE)
-            {
-                return NotFound();
-            }
-
-            size = ValidatePageSize(size);
-
-            var results = await _db.JobListings
-                            .SearchTitle(title)
                             .GetPage(page, size)
                             .ToListAsync();
 
@@ -138,7 +118,6 @@ namespace JobsApi.Controllers
         }
 
 
-        /* -- Helper Functions -- */
 
         private int ValidatePageSize(int size)
         {
