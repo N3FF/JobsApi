@@ -34,40 +34,40 @@ namespace JobsApi.Controllers
 
         // GET api/<ValuesController>/Page?current=1&size=10
         [HttpGet("Page")]
-        public async Task<ActionResult<List<JobListingDTO>>> Browse(int current = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
+        public async Task<ActionResult<List<JobListingDTO>>> Browse(int page = FIRST_PAGE, int pageSize = DEFAULT_PAGE_SIZE)
         {
-            if (current < FIRST_PAGE)
+            if (page < FIRST_PAGE)
             {
                 return NotFound();
             }
 
-            size = ValidatePageSize(size);
+            pageSize = ValidatePageSize(pageSize);
 
             var results = await _db.JobListings
-                            .GetPage(current, size)
+                            .GetPage(page, pageSize)
                             .ToListAsync();
 
-            return Ok(results);
+            return results.Any() ? Ok(results) : NotFound();
         }
 
 
         // GET api/<ValuesController>?category=0&page=1&size=10
         [HttpGet("Search/Category/{category}")]
-        public async Task<ActionResult<List<JobListingDTO>>> CategorySearch(JobCategories category, int page = FIRST_PAGE, int size = DEFAULT_PAGE_SIZE)
+        public async Task<ActionResult<List<JobListingDTO>>> CategorySearch(JobCategories category, int page = FIRST_PAGE, int pageSize = DEFAULT_PAGE_SIZE)
         {
             if (page < FIRST_PAGE) 
             { 
                 return NotFound(); 
             } 
             
-            size = ValidatePageSize(size);
+            pageSize = ValidatePageSize(pageSize);
 
             var results = await _db.JobListings
                             .Where(j => j.Categories == category)
-                            .GetPage(page, size)
+                            .GetPage(page, pageSize)
                             .ToListAsync();
 
-            return Ok(results);
+            return results.Any() ? Ok(results) : NotFound();
         }
 
 
@@ -87,13 +87,13 @@ namespace JobsApi.Controllers
 
         // PUT api/<ValuesController>/Update/5
         [HttpPut("Update/{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] JobListingDTO updated)
+        public async Task<ActionResult> Put(int id, [FromBody] JobListingDTO updatedListing)
         {
             var listing = await _db.JobListings.FindAsync(id);
 
             if (ModelState.IsValid && listing != null)
             {
-                _db.JobListings.Update(listing, updated);
+                _db.JobListings.Update(listing, updatedListing);
                 await _db.SaveChangesAsync();
 
                 return Ok(listing);

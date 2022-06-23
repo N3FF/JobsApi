@@ -4,19 +4,19 @@ namespace JobsApi.Data.Extensions
 {
     public static class JobDbExtensions
     {
-        public static IQueryable<JobListingDTO> GetPage(this IQueryable<JobListingDTO> listings, int page, int size)
+        public static IQueryable<JobListingDTO> GetPage(this IQueryable<JobListingDTO> listings, int pageNumber, int pageSize)
         {
-            page--;
+            pageNumber--;
             return listings
-                .Skip(page * size)
-                .Take(size)
+                .Skip(pageNumber * pageSize)
+                .Take(pageSize)
                 .Include(l => l.ImageUris);
         }
 
-        public static void Update(this DbSet<JobListingDTO> listings, JobListingDTO current, JobListingDTO updated)
+        public static void Update(this DbSet<JobListingDTO> listings, JobListingDTO currentListing, JobListingDTO updatedListing)
         {
-            current.Update(updated);
-            listings.Update(current);
+            currentListing.Update(updatedListing);
+            listings.Update(currentListing);
         }
 
         public async static Task<JobListingDTO?> FindListingAsync(this DbSet<JobListingDTO> listings, int id)
